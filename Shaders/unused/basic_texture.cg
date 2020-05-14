@@ -1,0 +1,33 @@
+//
+// Render a slice of a 3D texture
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// vertex program
+void TextureVP(in float4 pos : POSITION,
+               in float3 TexCoord : TEXCOORD0,
+               uniform float4x4 modelViewProj : state.matrix.mvp,
+               uniform float4x4 modelViewInv : state.matrix.modelview.inverse,
+               out float4 o_hpos : POSITION,
+               out float3 o_tex : TEXCOORD0
+              )
+{
+     o_hpos = mul(modelViewProj, pos);
+     o_tex = TexCoord;
+}
+
+// fragment program
+float4 TextureFP( sampler3D volumeTex,
+                  float3 TexCoord : TEXCOORD0,
+                  uniform float brightness = 1.0,
+                  uniform float density = 1.0
+                  ) : COLOR
+{
+    float4 s = tex3D(volumeTex, TexCoord);
+    s.a *= density;
+    //s.rgb *= s.a;
+    s.rgb *= brightness;
+    //if( s.a == 0 ) discard;
+    
+    return s;
+}
